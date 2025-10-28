@@ -1,0 +1,144 @@
+﻿<UserControl x:Class="PnpExample.Views.AutoOperationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:viewModels="clr-namespace:PnpExample.ViewModels;assembly=PnpExample"
+             xmlns:views="clr-namespace:ControlBeeWPF.Views;assembly=ControlBeeWPF"
+             d:DataContext="{d:DesignInstance Type=viewModels:AutoOperationViewModel}"
+             mc:Ignorable="d"
+             d:DesignHeight="1024" d:DesignWidth="1280">
+    <Grid>
+        <Grid.Resources>
+            <Style TargetType="Button" BasedOn="{StaticResource ExtrudedButtonStyle}">
+                <Setter Property="Padding" Value="10" />
+                <Setter Property="Margin" Value="2" />
+                <Setter Property="HorizontalContentAlignment" Value="Left" />
+                <Setter Property="Width" Value="100" />
+            </Style>
+            <Style TargetType="TabItem">
+                <Setter Property="Padding" Value="5 5 5 5" />
+            </Style>
+            <Style TargetType="GroupBox">
+                <Setter Property="Padding" Value="5" />
+            </Style>
+            <Style TargetType="views:VariableStatusBarView">
+                <Setter Property="NameColumnWidth" Value="140" />
+                <Setter Property="UnitColumnWidth" Value="50" />
+            </Style>
+            <Style TargetType="views:DigitalInputStatusBarView">
+                <Setter Property="NameColumnWidth" Value="140" />
+            </Style>
+            <Style TargetType="views:DigitalOutputStatusBarView">
+                <Setter Property="NameColumnWidth" Value="140" />
+            </Style>
+        </Grid.Resources>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="280" />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Row="0" Grid.Column="0" Name="MagazinePanel">
+                    <GroupBox Header="Source Magazine" Name="SourceMagazineGroup" />
+                    <Button Content="Magazine Clear" Name="MagazineClearButton" Padding="0 10"
+                            IsEnabled="{Binding CanStart}"
+                            Command="{Binding MagazineClearCommand}"/>
+                </StackPanel>
+                <StackPanel Grid.Row="0" Grid.Column="1">
+                    <GroupBox Header="Target Carrier" Name="TargetCarrierGroup" />
+                </StackPanel>
+                <StackPanel Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Name="SourceTrayPanel">
+                    <GroupBox Header="Source Tray" Name="SourceTrayGroup">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <GroupBox Grid.Column="0" Name="FrontSourceTrayGroup" Header="Source Tray Front"/>
+                            <GroupBox Grid.Column="1" Name="RearSourceTrayGroup" Header="Source Tray Rear"/>
+                        </Grid>
+                    </GroupBox>
+                </StackPanel>
+                <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="510"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <ContentControl Grid.Column="0" Name="MachineTopArea" />
+                    <GroupBox Grid.Column="1" Name="CameraArea" Header="Camera" />
+                </Grid>
+
+            </Grid>
+        </Grid>
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="10">
+                <GroupBox Header="Run Mode">
+                    <WrapPanel>
+                        <Button Name="NormalModeButton" Content="Normal" Background="LightSkyBlue"
+                                Command="{Binding NormalRunModeCommand}" />
+                        <Button Name="BypassModeButton" Content="Bypass"
+                                Command="{Binding BypassModeCommand}"/>
+                        <Button Name="DryRunModeButton" Content="DryRun"
+                                Command="{Binding DryRunModeCommand}" />
+                        <Button Name="SimulationModeButton" Content="Simulation" />
+                    </WrapPanel>
+                </GroupBox>
+                <GroupBox Header="Machine Control">
+                    <WrapPanel>
+                        <Button Name="StartButton" Content="Start"
+                                Command="{Binding StartCommand}"
+                                IsEnabled="{Binding CanStart}" />
+                        <Button Name="StopButton" Content="Stop"
+                                Command="{Binding StopCommand}" />
+                        <Button Name="ResetButton" Content="Reset"
+                                Command="{Binding ResetErrorCommand}" />
+                        <Button Name="CycleButton" Content="Cycle"
+                                Command="{Binding CycleCommand}"
+                                IsEnabled="{Binding CanStart}" />
+                        <Button Name="LoadProject" Click="LoadProject_OnClick" Content="Load Project" />
+                        <Button Name="InitializeButton" Click="InitializeButton_Click" Content="Initialize" />
+                    </WrapPanel>
+                </GroupBox>
+                <GroupBox Header="Production Speed">
+                    <StackPanel Name="ProductionSpeedPanel" />
+                </GroupBox>
+                <GroupBox Header="Output">
+                    <StackPanel Name="OutputPanel" />
+                </GroupBox>
+                <GroupBox Header="TimeInfo">
+                    <GroupBox.Resources>
+                        <Style TargetType="views:VariableStatusBarView">
+                            <Setter Property="NameColumnWidth" Value="100" />
+                            <Setter Property="UnitColumnWidth" Value="90" />
+                        </Style>
+                    </GroupBox.Resources>
+                    <StackPanel Name="TimeInfoPanel" />
+                </GroupBox>
+                <GroupBox Header="Sequence">
+                    <StackPanel Name="SequencePanel" />
+                </GroupBox>
+                <GroupBox Header="SMEMA">
+                    <StackPanel>
+                        <GroupBox Header="Previous">
+                            <StackPanel Name="SmemaStatusPrev" />
+                        </GroupBox>
+                        <GroupBox Header="Next">
+                            <StackPanel Name="SmemaStatusNext" />
+                        </GroupBox>
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

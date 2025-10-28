@@ -1,0 +1,57 @@
+﻿<Window x:Class="PnpExample.Views.PnpExampleDialogView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:models="clr-namespace:ControlBee.Models;assembly=ControlBee"
+        d:DataContext="{d:DesignInstance Type=models:DialogContext}"
+        mc:Ignorable="d"
+        Height="250" Width="600"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner">
+    <Grid Margin="10">
+        <Grid.Resources>
+            <Style TargetType="Button" BasedOn="{StaticResource ExtrudedButtonStyle}">
+                <Setter Property="Width" Value="80"></Setter>
+                <Setter Property="Height" Value="30"></Setter>
+                <Setter Property="Margin" Value="2"></Setter>
+            </Style>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Label Grid.Row="0" Name="ActorNameLabel" Content="{Binding ActorName}" 
+               HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+               FontSize="20" FontWeight="Bold" Background="#3B3B3B" Foreground="White"/>
+
+        <Grid Grid.Row="1" Name="HeadGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Name="ImageButton" Content="Image" 
+                    Click="ImageButton_OnClick"/>
+            <Label Grid.Column="1" Name="NameLabel" Content="{Binding Name}" 
+                   HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                   FontSize="20"/>
+            <Button Grid.Column="2" Name="CloseButton" Content="Close" IsDefault="True"
+                    Click="CloseButton_OnClick"/>
+        </Grid>
+        <Label Grid.Row="2" Content="Description"
+               Background="Gray" Foreground="White" Margin="0 5 0 0"
+               HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <TextBox Grid.Row="3" 
+                 Text="{Binding Desc}" Margin="0 5 0 0"
+                 IsReadOnly="True"/>
+        <StackPanel Grid.Row="4" Name="ActionButtonPanel"
+                    Orientation="Horizontal" HorizontalAlignment="Right"
+                    Visibility="Collapsed">
+        </StackPanel>
+    </Grid>
+</Window>

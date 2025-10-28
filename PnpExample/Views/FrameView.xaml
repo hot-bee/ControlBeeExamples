@@ -1,0 +1,51 @@
+﻿<UserControl x:Class="PnpExample.Views.FrameView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             
+             xmlns:viewModels1="clr-namespace:PnpExample.ViewModels;assembly=PnpExample"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=viewModels1:FrameViewModel}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="80" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="60" />
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0" BorderBrush="Silver" BorderThickness="0 0 0 1">
+            <ContentControl Name="HeaderArea" Margin="5"/>
+        </Border>
+        <ContentControl Grid.Row="1" Name="ContentArea" Margin="10" />
+        <Grid Grid.Row="2">
+            <Grid.Resources>
+                <Style TargetType="Button">
+                    <Setter Property="Background" Value="#444445" />
+                    <Setter Property="Foreground" Value="White" />
+                    <Setter Property="FontSize" Value="14" />
+                </Style>
+            </Grid.Resources>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Name="MainButton" Content="MAIN"
+                    Click="Button_OnClick" />
+            <Button Grid.Column="1" Name="VisionMonitorButton" Content="VISION MONITOR"
+                    Click="Button_OnClick" />
+            <Button Grid.Column="2" Name="FunctionButton" Content="MANUAL"
+                    Click="Button_OnClick" />
+            <Button Grid.Column="3" Name="SetupButton" Content="SETUP"
+                    Click="Button_OnClick" />
+            <Button Grid.Column="4" Name="RecipeButton" Content="Recipe"
+                    Click="Button_OnClick" />
+            <Button Grid.Column="5" Name="LogButton" Content="LOG"
+                    Click="Button_OnClick" />
+        </Grid>
+    </Grid>
+</UserControl>

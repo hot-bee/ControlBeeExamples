@@ -1,0 +1,63 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>True</UseWindowsForms>
+    <OutputType>WinExe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Images\326558_blank_check_box_icon.png" />
+    <None Remove="Images\326561_box_check_icon.png" />
+    <None Remove="Images\3289558_athlete_athletes_competition_preparation_running_icon.png" />
+    <None Remove="Images\top_view_welder.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="log4net" Version="3.0.3" />
+    <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="SQLite" Version="3.13.0" />
+    <PackageReference Include="System.Drawing.Common" Version="9.0.6" />
+    <PackageReference Include="WatsonTcp" Version="6.0.9" />
+    <PackageReference Include="YamlDotNet" Version="16.3.0" />
+    <PackageReference Include="System.IO.Ports" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ControlBee">
+      <HintPath>..\..\ControlBee\ControlBee\bin\Debug\net8.0\ControlBee.dll</HintPath>
+    </Reference>
+    <Reference Include="ControlBeeAbstract">
+      <HintPath>..\..\ControlBeeAbstract\ControlBeeAbstract\bin\Debug\net8.0\ControlBeeAbstract.dll</HintPath>
+    </Reference>
+    <Reference Include="ControlBeeWPF">
+      <HintPath>..\..\ControlBeeWPF\ControlBeeWPF\bin\Debug\net8.0-windows\ControlBeeWPF.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Images\326558_blank_check_box_icon.png" />
+    <Resource Include="Images\326561_box_check_icon.png" />
+    <Resource Include="Images\3289558_athlete_athletes_competition_preparation_running_icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Views\ChangeRecipeView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="log4net.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

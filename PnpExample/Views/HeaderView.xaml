@@ -1,0 +1,107 @@
+﻿<UserControl x:Class="PnpExample.Views.HeaderView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="150" d:DesignWidth="1280">
+    <Border BorderThickness="1" BorderBrush="Silver">
+        <Grid>
+            <Grid.Resources>
+                <Style TargetType="Label">
+                    <Setter Property="FontSize" Value="14" />
+                    <Setter Property="HorizontalContentAlignment" Value="Center" />
+                    <Setter Property="VerticalContentAlignment" Value="Center" />
+                </Style>
+
+                <Style x:Key="TopCellBorder" TargetType="Border">
+                    <Setter Property="BorderBrush" Value="Silver"/>
+                    <Setter Property="BorderThickness" Value="0 0 1 1"/>
+                </Style>
+
+                <Style x:Key="BottomCellBorder" TargetType="Border">
+                    <Setter Property="BorderBrush" Value="Silver"/>
+                    <Setter Property="BorderThickness" Value="0 0 1 0"/>
+                </Style>
+            </Grid.Resources>
+            
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource TopCellBorder}" Name="LogoBorder">
+
+            </Border>
+
+            <Border Grid.Row="1" Grid.Column="0" Style="{StaticResource BottomCellBorder}">
+                <Label Content="Syncer"/>
+            </Border>
+            <Border Grid.Row="1" Grid.Column="1" Style="{StaticResource BottomCellBorder}">
+                <Label Content="Unknown" Name="MachineStatus"/>
+            </Border>
+
+            <Border Grid.Row="0" Grid.Column="2" Style="{StaticResource TopCellBorder}">
+                <Label Content="Vision"/>
+            </Border>
+            <Border Grid.Row="0" Grid.Column="3" Style="{StaticResource TopCellBorder}" Name="VisionStatusBorder" MouseLeftButtonDown="VisionStatusBorder_OnMouseLeftButtonDown">
+                <Label Content="Connected" Name="VisionStatusLabel"/>
+            </Border>
+            <Border Grid.Row="1" Grid.Column="2" Style="{StaticResource BottomCellBorder}">
+            </Border>
+            <Border Grid.Row="1" Grid.Column="3" Style="{StaticResource BottomCellBorder}">
+                <Label Content="-" Name="MasterModeStatus"/>
+            </Border>
+
+            <Border Grid.Row="0" Grid.Column="4" Grid.ColumnSpan="5" Style="{StaticResource TopCellBorder}" Background="WhiteSmoke">
+                <Label Content="Pnp Machine" FontWeight="Bold"/>
+            </Border>
+            <Border Grid.Row="1" Grid.Column="4" Grid.ColumnSpan="2" Style="{StaticResource BottomCellBorder}" Background="AliceBlue">
+                <Label Content="Recipe"/>
+            </Border>
+            <Border Grid.Row="1" Grid.Column="6" Grid.ColumnSpan="3" Style="{StaticResource BottomCellBorder}" Background="LavenderBlush">
+                <Label Name="RecipeNameLabel"/>
+            </Border>
+
+            <Border Grid.Row="0" Grid.Column="9" Style="{StaticResource TopCellBorder}">
+                <Label Content="User"/>
+            </Border>
+            <Border Grid.Row="0" Grid.Column="10" Style="{StaticResource TopCellBorder}">
+                <Label Content="Operator"/>
+            </Border>
+            <Border Grid.Row="1" Grid.Column="9" Style="{StaticResource BottomCellBorder}">
+                <Label Content="Version" Name="VersionLabel"/>
+            </Border>
+            <Border Grid.Row="1" Grid.Column="10" Style="{StaticResource BottomCellBorder}">
+                <Label Content="0.0.1"/>
+            </Border>
+
+            <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="11" Grid.ColumnSpan="2" Name="ClockCell" MouseLeftButtonDown="ClockCell_OnMouseLeftButtonDown" BorderBrush="Transparent" BorderThickness="0" Background="Transparent" Padding="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Row="0" Name="DateLabel" VerticalContentAlignment="Bottom">2025-3-5</Label>
+                    <Label Grid.Row="1" Name="TimeLabel" VerticalContentAlignment="Top">12:00</Label>
+                </Grid>
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>
