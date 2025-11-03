@@ -198,18 +198,17 @@ public partial class App : Application
             var variableManager = serviceProvider.GetRequiredService<IVariableManager>();
             variableManager.Load(recipeName);
 
+            var handler = new UiActorMessageHandler(Dispatcher);
+            ui.SetHandler(handler);
+
             auxiliary.Start();
             syncer.Start();
             targetStage.Start();
             head.Start();
             picker0.Start();
-
             picker1.Start();
 
             ((StageActor)sourceStage0).Start();
-
-            var handler = new UiActorMessageHandler(Dispatcher);
-            ui.SetHandler(handler);
 
             var functionUnitViewFactory = serviceProvider.GetRequiredService<FunctionUnitViewFactory>();
 
