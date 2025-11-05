@@ -19,7 +19,6 @@ public class EmptyActor : Actor
     #region Peers
 
     public IActor Syncer = null!;
-    public IActor Parent = null!;
 
     #endregion
 
@@ -45,13 +44,11 @@ public class EmptyActor : Actor
     #endregion
 
     public void SetPeers(
-        IActor syncer,
-        IActor parent
+        IActor syncer
     )
     {
         Syncer = syncer;
-        Parent = parent;
-        InitPeers([syncer, parent]);
+        InitPeers([syncer]);
     }
 
     protected override IState CreateErrorState(SequenceError error)

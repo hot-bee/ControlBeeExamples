@@ -31,7 +31,7 @@ public class AutoState(EmptyActor actor) : State<EmptyActor>(actor)
 
     public bool Scan()
     {
-        if (Actor.GetPeerStatus(Actor.Parent, "_auto") is not true)
+        if (Actor.GetPeerStatus(Actor.Syncer, "_auto") is not true)
         {
             Actor.State = new IdleState(Actor);
             return true;
