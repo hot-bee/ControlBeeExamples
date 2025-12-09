@@ -37,6 +37,7 @@ namespace PnpExample;
 /// </summary>
 public partial class App : Application
 {
+    private Mutex _mutex;
     private static readonly ILog Logger = LogManager.GetLogger("App");
 
     public App()
@@ -53,7 +54,7 @@ public partial class App : Application
         TimeBeginPeriod(1);
 
         const string mutexName = @"Global\ControlBee.SingleInstance.{1FAD292E-B2DC-4207-AF76-61EA4F2A0D6F}";
-        var mutex = new Mutex(true, mutexName, out var createdNew);
+        _mutex = new Mutex(true, mutexName, out var createdNew);
         if (!createdNew)
         {
             Logger.Fatal("Another instance is running.");
