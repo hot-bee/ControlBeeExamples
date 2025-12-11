@@ -1,6 +1,5 @@
 ﻿using PnpExample.Views;
 using ControlBee.Interfaces;
-using ControlBeeAbstract.Exceptions;
 using ControlBeeWPF.Services;
 using ControlBeeWPF.ViewModels;
 using ControlBeeWPF.Views;
@@ -14,51 +13,54 @@ public class ViewFactory(IServiceProvider serviceProvider) : ControlBeeWPF.Servi
 {
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 
+    public override T Create<T>(params object?[]? args)
+    {
+        var baseView = base.Create<T>(args);
+        if (baseView != null) return baseView;
+
+
+        return (_serviceProvider.GetRequiredService(typeof(T)) as T)!;
+    }
+
+    [Obsolete]
     public override UserControl Create(Type viewType, params object?[]? args)
     {
-        try
+        var baseView = base.Create(viewType, args);
+        if (baseView != null) return baseView;
+
+        if (viewType == typeof(FunctionView))
         {
-            return base.Create(viewType, args);
-        }
-        catch (ValueError)
-        {
-            if (viewType == typeof(FunctionView))
-            {
-                var actorRegistry = _serviceProvider.GetRequiredService<IActorRegistry>();
-                var functionViewFactory = serviceProvider.GetRequiredService<FunctionUnitViewFactory>();
-                var view = new FunctionView(actorRegistry, this, functionViewFactory);
-
-                return view;
-            }
-
-            if (viewType == typeof(VisionStatusView))
-            {
-                var visionDeviceName = (string)args![0]!;
-                var deviceManager = _serviceProvider.GetRequiredService<IDeviceManager>();
-                var viewModel = new VisionStatusViewModel(visionDeviceName, deviceManager);
-                var view = new VisionStatusView(viewModel);
-                return view;
-            }
-
-            if (viewType == typeof(TeachingView))
-            {
-                var actorName = (string)args![0]!;
-                var actorRegistry = _serviceProvider.GetRequiredService<IActorRegistry>();
-                var teachingViewFactory = _serviceProvider.GetRequiredService<TeachingViewFactory>();
-                var viewModel = new TeachingViewModel(actorName, actorRegistry);
-                var view = new TeachingView(
-                    actorName,
-                    viewModel,
-                    teachingViewFactory,
-                    actorRegistry,
-                    this
-                );
-                return view;
-            }
-
-            return (UserControl)_serviceProvider.GetRequiredService(viewType);
+            var actorRegistry = _serviceProvider.GetRequiredService<IActorRegistry>();
+            var functionViewFactory = _serviceProvider.GetRequiredService<FunctionUnitViewFactory>();
+            var view = new FunctionView(actorRegistry, this, functionViewFactory);
+            return view;
         }
 
-        throw new ValueError();
+        if (viewType == typeof(VisionStatusView))
+        {
+            var visionDeviceName = (string)args![0]!;
+            var deviceManager = _serviceProvider.GetRequiredService<IDeviceManager>();
+            var viewModel = new VisionStatusViewModel(visionDeviceName, deviceManager);
+            var view = new VisionStatusView(viewModel);
+            return view;
+        }
+
+        if (viewType == typeof(TeachingView))
+        {
+            var actorName = (string)args![0]!;
+            var actorRegistry = _serviceProvider.GetRequiredService<IActorRegistry>();
+            var teachingViewFactory = _serviceProvider.GetRequiredService<TeachingViewFactory>();
+            var viewModel = new TeachingViewModel(actorName, actorRegistry);
+            var view = new TeachingView(
+                actorName,
+                viewModel,
+                teachingViewFactory,
+                actorRegistry,
+                this
+            );
+            return view;
+        }
+
+        return (UserControl)_serviceProvider.GetRequiredService(viewType);
     }
 }
