@@ -1,6 +1,4 @@
-﻿using PnpExample.Constants;
-using ControlBee.Constants;
-using ControlBee.Models;
+﻿using ControlBee.Models;
 using log4net;
 using Message = ControlBee.Models.Message;
 
@@ -10,11 +8,6 @@ public class InactiveState(StageActor actor) : State<StageActor>(actor)
 {
     private static readonly ILog Logger = LogManager.GetLogger("Sequence");
 
-    public override void Dispose()
-    {
-        base.Dispose();
-        Actor.SetStatus("_inactive", false);
-    }
     public override bool ProcessMessage(Message message)
     {
         switch (message.Name)
@@ -36,6 +29,7 @@ public class InactiveState(StageActor actor) : State<StageActor>(actor)
                 Actor.X.Initialize();
 
                 message.Sender.Send(new Message(Actor, "_initialized"));
+                Actor.SetStatus("_inactive", false);
                 Actor.State = new IdleState(Actor);
                 Logger.Info("Finished initialization.");
                 return true;
