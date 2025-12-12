@@ -40,19 +40,19 @@ public partial class FrameView : UserControl
         var initializationView = viewFactory.Create(typeof(InitializationView));
         HeaderArea.Content = headerView;
         ContentArea.Content = initializationView;
-        _autoOperationView = (AutoOperationView)viewFactory.Create(typeof(AutoOperationView));
+        _autoOperationView = (AutoOperationView)viewFactory.Create(typeof(AutoOperationView))!;
         _inspectionContainerView = viewFactory.Create(typeof(InspectionContainerView), "TcpVision", new Dict
         {
             ["Mode"] = "VisionFrame",
             ["Channel"] = -1
-        });
-        _manualView = (FunctionView)viewFactory.Create(typeof(FunctionView));
-        _setupView = new ChangeableViewHolder(viewFactory.Create(typeof(SetupView)));
-        _dataView = new ChangeableViewHolder(viewFactory.Create(typeof(DataMainView)));
-        _monitorView = new ChangeableViewHolder(viewFactory.Create(typeof(MonitorMainView)));
-        _logView = new ChangeableViewHolder(viewFactory.Create(typeof(LogView)));
+        })!;
+        _manualView = (FunctionView)viewFactory.Create(typeof(FunctionView))!;
+        _setupView = new ChangeableViewHolder(viewFactory.Create(typeof(SetupView))!);
+        _dataView = new ChangeableViewHolder(viewFactory.Create(typeof(DataMainView))!);
+        _monitorView = new ChangeableViewHolder(viewFactory.Create(typeof(MonitorMainView))!);
+        _logView = new ChangeableViewHolder(viewFactory.Create(typeof(LogView))!);
         _variableManager = variableManager;
-        _recipeManagerView = (RecipeManagerView)viewFactory.Create(typeof(RecipeManagerView));
+        _recipeManagerView = (RecipeManagerView)viewFactory.Create(typeof(RecipeManagerView))!;
 
         _autoOperationView.ViewChanged += (sender, control) => ContentArea.Content = control;
     }
