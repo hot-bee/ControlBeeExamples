@@ -18,6 +18,8 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="ControlBee" Version="0.1.2" />
+    <PackageReference Include="ControlBeeWPF" Version="0.1.1" />
     <PackageReference Include="log4net" Version="3.0.3" />
     <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.0" />
@@ -28,18 +30,6 @@
     <PackageReference Include="WatsonTcp" Version="6.0.9" />
     <PackageReference Include="YamlDotNet" Version="16.3.0" />
     <PackageReference Include="System.IO.Ports" Version="5.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="ControlBee">
-      <HintPath>..\..\ControlBee\ControlBee\bin\Debug\net8.0\ControlBee.dll</HintPath>
-    </Reference>
-    <Reference Include="ControlBeeAbstract">
-      <HintPath>..\..\ControlBeeAbstract\ControlBeeAbstract\bin\Debug\net8.0\ControlBeeAbstract.dll</HintPath>
-    </Reference>
-    <Reference Include="ControlBeeWPF">
-      <HintPath>..\..\ControlBeeWPF\ControlBeeWPF\bin\Debug\net8.0-windows\ControlBeeWPF.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>
