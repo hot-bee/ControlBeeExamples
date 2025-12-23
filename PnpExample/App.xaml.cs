@@ -7,7 +7,6 @@ using PnpExample.Actors.Head;
 using PnpExample.Actors.Picker;
 using PnpExample.Actors.Stage;
 using PnpExample.Constants;
-using PnpExample.Interfaces;
 using PnpExample.Models;
 using PnpExample.Services;
 using PnpExample.ViewModels;
@@ -64,10 +63,8 @@ public partial class App : Application
 
         AppDomain.CurrentDomain.UnhandledException += (_, e) =>
         {
-            Directory.CreateDirectory("crashes");
-            var logFile = $"crashes/crash_{DateTime.Now:yy-MM-dd_HHmmss}.log";
-            File.WriteAllText(logFile, ((Exception)e.ExceptionObject).ToString());
-            Process.Start("notepad.exe", logFile);
+            if (e.ExceptionObject is Exception ex)
+                WriteCrashLog(ex);
         };
 
         var loadingMainWindowView = new LoadingMainWindowView(null);
@@ -75,163 +72,182 @@ public partial class App : Application
 
         Task.Run(() =>
         {
-            var systemConfigurations = new SystemConfigurations();
-            systemConfigurations.Load();
-
-            var services = new ServiceCollection();
-            services.AddSingleton<IDatabase, SqliteDatabase>();
-            services.AddSingleton<IVariableManager, VariableManager>();
-            if (systemConfigurations.FakeMode)
-                services.AddSingleton<ITimeManager, FrozenTimeManager>();
-            else
-                services.AddSingleton<ITimeManager, TimeManager>();
-            services.AddSingleton<IPositionAxesMap, PositionAxesMap>();
-            services.AddSingleton<IScenarioFlowTester, EmptyScenarioFlowTester>();
-            services.AddSingleton<ISystemConfigurations, SystemConfigurations>();
-            services.AddSingleton<IActorRegistry, ActorRegistry>();
-            services.AddSingleton<ActorFactory>();
-            services.AddSingleton<IAxisFactory, AxisFactory>();
-            services.AddSingleton<IDeviceManager, DeviceManager>();
-            services.AddSingleton<IDigitalInputFactory, DigitalInputFactory>();
-            services.AddSingleton<IDigitalOutputFactory, DigitalOutputFactory>();
-            services.AddSingleton<IAnalogInputFactory, AnalogInputFactory>();
-            services.AddSingleton<IAnalogOutputFactory, AnalogOutputFactory>();
-            services.AddSingleton<ISystemPropertiesDataSource, SystemPropertiesDataSource>();
-            services.AddSingleton<IInitializeSequenceFactory, InitializeSequenceFactory>();
-            services.AddSingleton<IBinaryActuatorFactory, BinaryActuatorFactory>();
-            services.AddSingleton<IVisionFactory, VisionFactory>();
-            services.AddSingleton<DialogDisplay>();
-            services.AddSingleton<DialogViewFactory>();
-            services.AddSingleton<DialogContextFactory>();
-            services.AddSingleton<IDialogFactory, DialogFactory>();
-            services.AddSingleton<IDeviceLoader, DeviceLoader>();
-
-            services.AddSingleton<IViewFactory, ViewFactory>();
-            services.AddTransient<HeaderView>();
-            services.AddTransient<MainWindow>();
-            services.AddTransient<FrameViewModel>();
-            services.AddTransient<FrameView>();
-            services.AddSingleton<InitializationViewModel>();
-            services.AddTransient<InitializationView>();
-            services.AddTransient<ManualView>();
-            services.AddTransient<FunctionView>();
-            services.AddTransient<FunctionUnitView>();
-            services.AddSingleton<FunctionUnitViewFactory>();
-            services.AddTransient<SetupView>();
-            services.AddSingleton<ActorMonitorViewModel>();
-            services.AddTransient<ActorMonitorView>();
-            services.AddTransient<AutoOperationView>();
-            services.AddSingleton<AutoOperationViewModel>();
-            services.AddSingleton<MachineTopViewModel>();
-            services.AddTransient<ChangeableViewHolder>();
-            services.AddTransient<DataMainView>();
-            services.AddTransient<MonitorMainView>();
-            services.AddSingleton<IDeviceMonitor, DeviceMonitor>();
-            services.AddSingleton<AxesStatusView>();
-            services.AddSingleton<AxesStatusViewModel>();
-            services.AddSingleton<ActorItemExplorerViewFactory>();
-            services.AddSingleton<ActorItemExplorerWholeView>();
-            services.AddSingleton<TeachingViewFactory>();
-            services.AddTransient<TeachingWholeView>();
-            services.AddTransient<LogView>();
-            services.AddTransient<LogViewModel>();
-            services.AddTransient<ChangeRecipeView>();
-            services.AddSingleton<IEventManager, EventManager>();
-            services.AddSingleton<IDialogService, DialogService>();
-            services.AddTransient<RecipeManagerView>();
-            services.AddSingleton<RecipeManagerViewModel>();
-
-            services.AddTransient<IDialog, PnpExampleDialog>();
-            services.AddTransient<IDialogContext, PnpExampleDialogContext>();
-            services.AddTransient<IDialogView, PnpExampleDialogView>();
-
-            services.AddTransient<SyncerActor>();
-            services.AddTransient<HeadActor>();
-            services.AddTransient<PickerActor>();
-            services.AddTransient<StageActor>();
-
-            var serviceProvider = services.BuildServiceProvider();
-
-            systemConfigurations = (SystemConfigurations)serviceProvider.GetRequiredService<ISystemConfigurations>();
-            systemConfigurations.Load();
-
-            var systemPropertiesDataSource =
-                serviceProvider.GetRequiredService<ISystemPropertiesDataSource>();
-            systemPropertiesDataSource.ReadFromFile();
-            serviceProvider.GetRequiredService<IDeviceLoader>();
-
-            var actorFactory = serviceProvider.GetRequiredService<ActorFactory>();
-            HeadActor head;
-            SyncerActor syncer;
-            IActor sourceCameraHead = EmptyActor.Instance;
-            IActor sourceStage0 = null;
-            IActor lifter = EmptyActor.Instance;
-            var ui = actorFactory.Create<UiActor>("Ui");
-            var auxiliary = actorFactory.Create<AuxiliaryActor>("Auxiliary");
-            syncer = actorFactory.Create<SyncerActor>("Syncer", StageType.Tray, StageType.Carrier);
-            head = actorFactory.Create<HeadActor>("Head0", StageType.Tray, StageType.Carrier);
-            sourceStage0 =
-                actorFactory.Create<StageActor>("SourceStage0", StageType.Tray, TransferDirection.TransferOut, false);
-
-            var targetStage =
-                actorFactory.Create<StageActor>("TargetStage", StageType.Carrier, TransferDirection.TransferIn, false);
-            var picker0 = actorFactory.Create<PickerActor>("Picker0");
-            var picker1 = actorFactory.Create<PickerActor>("Picker1");
-
-            var syncerPeers = new PeerContainer
+            try
             {
-                Head = head,
-                Picker0 = picker0,
-                Picker1 = picker1,
-                SourceStage0 = sourceStage0,
-                TargetStage = targetStage,
-            };
-            auxiliary.SetPeers();
-            syncer.SetPeers(syncerPeers);
-            targetStage.SetPeers(syncer, head, null);
-            head.SetPeers(syncer, sourceStage0, targetStage, picker0, picker1);
-            picker0.SetPeers(syncer, head);
-            picker1.SetPeers(syncer, head);
+                var systemConfigurations = new SystemConfigurations();
+                systemConfigurations.Load();
 
-            ((StageActor)sourceStage0).SetPeers(syncer, head, null);
+                var services = new ServiceCollection();
+                services.AddSingleton<IDatabase, SqliteDatabase>();
+                services.AddSingleton<IVariableManager, VariableManager>();
+                if (systemConfigurations.FakeMode)
+                    services.AddSingleton<ITimeManager, FrozenTimeManager>();
+                else
+                    services.AddSingleton<ITimeManager, TimeManager>();
+                services.AddSingleton<IPositionAxesMap, PositionAxesMap>();
+                services.AddSingleton<IScenarioFlowTester, EmptyScenarioFlowTester>();
+                services.AddSingleton<ISystemConfigurations, SystemConfigurations>();
+                services.AddSingleton<IActorRegistry, ActorRegistry>();
+                services.AddSingleton<ActorFactory>();
+                services.AddSingleton<IAxisFactory, AxisFactory>();
+                services.AddSingleton<IDeviceManager, DeviceManager>();
+                services.AddSingleton<IDigitalInputFactory, DigitalInputFactory>();
+                services.AddSingleton<IDigitalOutputFactory, DigitalOutputFactory>();
+                services.AddSingleton<IAnalogInputFactory, AnalogInputFactory>();
+                services.AddSingleton<IAnalogOutputFactory, AnalogOutputFactory>();
+                services.AddSingleton<ISystemPropertiesDataSource, SystemPropertiesDataSource>();
+                services.AddSingleton<IInitializeSequenceFactory, InitializeSequenceFactory>();
+                services.AddSingleton<IBinaryActuatorFactory, BinaryActuatorFactory>();
+                services.AddSingleton<IVisionFactory, VisionFactory>();
+                services.AddSingleton<DialogDisplay>();
+                services.AddSingleton<DialogViewFactory>();
+                services.AddSingleton<DialogContextFactory>();
+                services.AddSingleton<IDialogFactory, DialogFactory>();
+                services.AddSingleton<IDeviceLoader, DeviceLoader>();
 
-            var recipeName = systemConfigurations.RecipeName;
-            var variableManager = serviceProvider.GetRequiredService<IVariableManager>();
-            variableManager.Load(recipeName);
+                services.AddSingleton<IViewFactory, ViewFactory>();
+                services.AddTransient<HeaderView>();
+                services.AddTransient<MainWindow>();
+                services.AddTransient<FrameViewModel>();
+                services.AddTransient<FrameView>();
+                services.AddSingleton<InitializationViewModel>();
+                services.AddTransient<InitializationView>();
+                services.AddTransient<ManualView>();
+                services.AddTransient<FunctionView>();
+                services.AddTransient<FunctionUnitView>();
+                services.AddSingleton<FunctionUnitViewFactory>();
+                services.AddTransient<SetupView>();
+                services.AddSingleton<ActorMonitorViewModel>();
+                services.AddTransient<ActorMonitorView>();
+                services.AddTransient<AutoOperationView>();
+                services.AddSingleton<AutoOperationViewModel>();
+                services.AddSingleton<MachineTopViewModel>();
+                services.AddTransient<ChangeableViewHolder>();
+                services.AddTransient<DataMainView>();
+                services.AddTransient<MonitorMainView>();
+                services.AddSingleton<IDeviceMonitor, DeviceMonitor>();
+                services.AddSingleton<AxesStatusView>();
+                services.AddSingleton<AxesStatusViewModel>();
+                services.AddSingleton<ActorItemExplorerViewFactory>();
+                services.AddSingleton<ActorItemExplorerWholeView>();
+                services.AddSingleton<TeachingViewFactory>();
+                services.AddTransient<TeachingWholeView>();
+                services.AddTransient<LogView>();
+                services.AddTransient<LogViewModel>();
+                services.AddTransient<ChangeRecipeView>();
+                services.AddSingleton<IEventManager, EventManager>();
+                services.AddSingleton<IDialogService, DialogService>();
+                services.AddTransient<RecipeManagerView>();
+                services.AddSingleton<RecipeManagerViewModel>();
 
-            var handler = new UiActorMessageHandler(Dispatcher);
-            ui.SetHandler(handler);
+                services.AddTransient<IDialog, PnpExampleDialog>();
+                services.AddTransient<IDialogContext, PnpExampleDialogContext>();
+                services.AddTransient<IDialogView, PnpExampleDialogView>();
 
-            auxiliary.Start();
-            syncer.Start();
-            targetStage.Start();
-            head.Start();
-            picker0.Start();
-            picker1.Start();
+                services.AddTransient<SyncerActor>();
+                services.AddTransient<HeadActor>();
+                services.AddTransient<PickerActor>();
+                services.AddTransient<StageActor>();
 
-            ((StageActor)sourceStage0).Start();
+                var serviceProvider = services.BuildServiceProvider();
 
-            var functionUnitViewFactory = serviceProvider.GetRequiredService<FunctionUnitViewFactory>();
+                systemConfigurations =
+                    (SystemConfigurations)serviceProvider.GetRequiredService<ISystemConfigurations>();
+                systemConfigurations.Load();
 
-            var deviceMonitor = serviceProvider.GetRequiredService<IDeviceMonitor>();
-            deviceMonitor.Start();
+                var systemPropertiesDataSource =
+                    serviceProvider.GetRequiredService<ISystemPropertiesDataSource>();
+                systemPropertiesDataSource.ReadFromFile();
+                serviceProvider.GetRequiredService<IDeviceLoader>();
 
-            var deviceManager = serviceProvider.GetRequiredService<IDeviceManager>();
-            StartupUtils.LaunchInspectionBeeAndConnect("TcpVision", deviceManager);
+                var actorFactory = serviceProvider.GetRequiredService<ActorFactory>();
+                HeadActor head;
+                SyncerActor syncer;
+                IActor sourceCameraHead = EmptyActor.Instance;
+                IActor sourceStage0 = null;
+                IActor lifter = EmptyActor.Instance;
+                var ui = actorFactory.Create<UiActor>("Ui");
+                var auxiliary = actorFactory.Create<AuxiliaryActor>("Auxiliary");
+                syncer = actorFactory.Create<SyncerActor>("Syncer", StageType.Tray, StageType.Carrier);
+                head = actorFactory.Create<HeadActor>("Head0", StageType.Tray, StageType.Carrier);
+                sourceStage0 =
+                    actorFactory.Create<StageActor>("SourceStage0", StageType.Tray, TransferDirection.TransferOut,
+                        false);
 
-            systemConfigurations.Version = "0.0.1";
+                var targetStage =
+                    actorFactory.Create<StageActor>("TargetStage", StageType.Carrier, TransferDirection.TransferIn,
+                        false);
+                var picker0 = actorFactory.Create<PickerActor>("Picker0");
+                var picker1 = actorFactory.Create<PickerActor>("Picker1");
 
-            Dispatcher.Invoke(() =>
+                var syncerPeers = new PeerContainer
+                {
+                    Head = head,
+                    Picker0 = picker0,
+                    Picker1 = picker1,
+                    SourceStage0 = sourceStage0,
+                    TargetStage = targetStage,
+                };
+                auxiliary.SetPeers();
+                syncer.SetPeers(syncerPeers);
+                targetStage.SetPeers(syncer, head, null);
+                head.SetPeers(syncer, sourceStage0, targetStage, picker0, picker1);
+                picker0.SetPeers(syncer, head);
+                picker1.SetPeers(syncer, head);
+
+                ((StageActor)sourceStage0).SetPeers(syncer, head, null);
+
+                var recipeName = systemConfigurations.RecipeName;
+                var variableManager = serviceProvider.GetRequiredService<IVariableManager>();
+                variableManager.Load(recipeName);
+
+                var handler = new UiActorMessageHandler(Dispatcher);
+                ui.SetHandler(handler);
+
+                auxiliary.Start();
+                syncer.Start();
+                targetStage.Start();
+                head.Start();
+                picker0.Start();
+                picker1.Start();
+
+                ((StageActor)sourceStage0).Start();
+
+                var functionUnitViewFactory = serviceProvider.GetRequiredService<FunctionUnitViewFactory>();
+
+                var deviceMonitor = serviceProvider.GetRequiredService<IDeviceMonitor>();
+                deviceMonitor.Start();
+
+                var deviceManager = serviceProvider.GetRequiredService<IDeviceManager>();
+                StartupUtils.LaunchInspectionBeeAndConnect("TcpVision", deviceManager);
+
+                systemConfigurations.Version = "0.0.1";
+
+                Dispatcher.Invoke(() =>
+                {
+                    var mainView = serviceProvider.GetRequiredService<MainWindow>();
+                    _ = serviceProvider.GetRequiredService<ActorMonitorViewModel>();
+
+                    Current.MainWindow = mainView;
+                    mainView.Show();
+
+                    loadingMainWindowView.Close();
+                    loadingMainWindowView = null;
+                });
+            }
+            catch (Exception ex)
             {
-                var mainView = serviceProvider.GetRequiredService<MainWindow>();
-                _ = serviceProvider.GetRequiredService<ActorMonitorViewModel>();
-
-                Current.MainWindow = mainView;
-                mainView.Show();
-
-                loadingMainWindowView.Close();
-                loadingMainWindowView = null;
-            });
+                WriteCrashLog(ex);
+                Dispatcher.Invoke(() => Shutdown(-1));
+            }
         });
+    }
+
+    private void WriteCrashLog(Exception ex)
+    {
+        Directory.CreateDirectory("crashes");
+        var logFile = $"crashes/crash_{DateTime.Now:yy-MM-dd_HHmmss}.log";
+        File.WriteAllText(logFile, ex.ToString());
+        Process.Start("notepad.exe", logFile);
     }
 }
